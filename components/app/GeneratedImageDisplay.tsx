@@ -15,7 +15,6 @@ export default function GeneratedImageDisplay({ imageUrl, isLoading, error, onRe
   if (imageUrl) {
     return (
       <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden shadow-md mt-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           src={imageUrl} 
           alt="Visualization of exercise"

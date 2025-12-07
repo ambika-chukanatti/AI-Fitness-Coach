@@ -158,7 +158,7 @@ const WorkoutCard = React.memo(({ dayPlan }: { dayPlan: DailyWorkout }) => {
             <CardContent className="pt-2">
                 <ul className="space-y-3">
                     {exercisesState.map((exState, index) => (
-                        <li key={index} className="border-b border-gray-100 dark:border-gray-800 pb-3">
+                        <li key={index} className="border-b border-gray-100 dark:border-gray-800 pb-3 last:border-b-0 last:pb-0">
                             <Collapsible 
                                 open={exState.isOpen}
                                 onOpenChange={() => handleTriggerClick(index, exState.name, exState.name)}
@@ -272,7 +272,7 @@ const DietCard = React.memo(({ dayPlan }: { dayPlan: DailyDiet }) => {
             <CardContent className="pt-2">
                 <ul className="space-y-3">
                     {mealsState.map((mealState, index) => (
-                        <li key={index} className="border-b border-gray-100 dark:border-gray-800 pb-3">
+                        <li key={index} className="border-b border-gray-100 dark:border-gray-800 pb-3 last:border-b-0 last:pb-0">
                             <Collapsible 
                                 open={mealState.isOpen}
                                 onOpenChange={() => handleTriggerClick(index, mealState.name, mealState.name)}
@@ -370,30 +370,33 @@ export function PlanDisplay({ plan, profile, onRegenerate }: PlanDisplayProps) {
     return (
         <div className="container mx-auto p-4 pt-8 max-w-4xl relative">
 
-            <h1 className="text-4xl font-extrabold text-center mb-2">
+            {/* Title and Profile Info - Adjusted text size for better mobile fit */}
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-center mb-2">
                 Hello, {profile.name}! Your AI Plan is Ready 🎉
             </h1>
-            <p className="text-center text-lg text-muted-foreground mb-6">
+            <p className="text-center text-base sm:text-lg text-muted-foreground mb-6 px-2">
                 Goal: <span className="font-semibold text-blue-500 dark:text-blue-400">{profile.goal}</span> | Level: {profile.level} | Location: {profile.location}
             </p>
             
+            {/* Motivational Quote Card */}
             <Card className="mb-6 bg-yellow-50 dark:bg-yellow-900 border-yellow-300 dark:border-yellow-700">
                 <CardContent className="p-4 text-center">
-                    <p className="italic text-xl break-words">"{plan.motivationQuote}"</p>
+                    <p className="italic text-lg sm:text-xl break-words">"{plan.motivationQuote}"</p>
                     <span className="text-sm text-muted-foreground">— AI Coach</span>
                 </CardContent>
             </Card>
             
-            <div className="flex justify-center space-x-4 mb-8">
-                <Button onClick={onRegenerate} variant="outline"><RefreshCw className="w-4 h-4 mr-2" /> Regenerate Plan</Button>
+            {/* Button Group: Regenerate and Download */}
+            <div className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-8 px-2">
+                <Button onClick={onRegenerate} variant="outline" className="w-full sm:w-auto"><RefreshCw className="w-4 h-4 mr-2" /> Regenerate Plan</Button>
                 
                 {isClient ? (
                     <PDFDownloadLink 
                         document={<MyPlanPDF plan={plan} profile={profile} />} 
                         fileName={`${profile.name.replace(/\s+/g, '_')}_Fitness_Plan.pdf`}
                     >
-                        {({ blob, url, loading, error }) => (
-                            <Button variant="secondary" disabled={loading}>
+                        {({ loading }) => (
+                            <Button variant="secondary" disabled={loading} className="w-full sm:w-auto">
                                 {loading ? (
                                     <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Preparing PDF...</>
                                 ) : (
@@ -403,16 +406,17 @@ export function PlanDisplay({ plan, profile, onRegenerate }: PlanDisplayProps) {
                         )}
                     </PDFDownloadLink>
                 ) : (
-                    <Button variant="secondary" disabled>
+                    <Button variant="secondary" disabled className="w-full sm:w-auto">
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Loading PDF...
                     </Button>
                 )}
             </div>
 
+            {/* Tabs (Workout/Diet) */}
             <Tabs defaultValue="workout" className="w-full">
                 <TabsList className="flex w-full justify-between p-1 bg-muted rounded-lg"> 
-                    <TabsTrigger value="workout" className="flex-1">🏋️ Workout Plan</TabsTrigger>
-                    <TabsTrigger value="diet" className="flex-1">🥗 Diet Plan</TabsTrigger>
+                    <TabsTrigger value="workout" className="flex-1 text-sm sm:text-base">🏋️ Workout Plan</TabsTrigger>
+                    <TabsTrigger value="diet" className="flex-1 text-sm sm:text-base">🥗 Diet Plan</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="workout" id="workout-content" className="mt-4">
@@ -432,14 +436,15 @@ export function PlanDisplay({ plan, profile, onRegenerate }: PlanDisplayProps) {
             
             <Separator className="my-8" />
             
+            {/* AI Lifestyle Tips Card */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl flex items-center"><Zap className="w-5 h-5 mr-2 text-green-500" /> AI Lifestyle Tips</CardTitle>
+                    <CardTitle className="text-xl sm:text-2xl flex items-center"><Zap className="w-5 h-5 mr-2 text-green-500" /> AI Lifestyle Tips</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ul className="list-disc list-inside space-y-2">
                         {plan.aiTips.map((tip, i) => (
-                            <li key={i} className="break-words">{tip}</li>
+                            <li key={i} className="break-words text-sm sm:text-base">{tip}</li>
                         ))}
                     </ul>
                 </CardContent>
