@@ -50,7 +50,7 @@ const fetchImage = async (description: string): Promise<string> => {
         
         if (!response.ok) {
             if (response.status === 429) {
-                   throw new Error('Rate limit exceeded. Please wait a moment.');
+                    throw new Error('Rate limit exceeded. Please wait a moment.');
             }
             throw new Error(data.error || 'Failed to generate image.');
         }
@@ -171,7 +171,6 @@ const WorkoutCard = React.memo(({ dayPlan }: { dayPlan: DailyWorkout }) => {
                                             text-gray-900 dark:text-gray-100"
                                     >
                                         <span className="flex flex-col items-start">
-                                            {/* FIX: Removed ** here */}
                                             <span>{index + 1}. {exState.name}</span>
                                             <span className="text-xs font-normal text-muted-foreground mt-0.5">{exState.sets} Sets / {exState.reps} / {exState.rest} Rest</span>
                                         </span>
@@ -286,7 +285,6 @@ const DietCard = React.memo(({ dayPlan }: { dayPlan: DailyDiet }) => {
                                             text-gray-900 dark:text-gray-100"
                                     >
                                         <span className="flex flex-col items-start">
-                                            {/* FIX: Removed ** here */}
                                             <span>{mealState.type}: {mealState.name}</span>
                                             <span className="text-xs font-normal text-muted-foreground mt-0.5">{mealState.description}</span>
                                         </span>
@@ -381,7 +379,7 @@ export function PlanDisplay({ plan, profile, onRegenerate }: PlanDisplayProps) {
             
             <Card className="mb-6 bg-yellow-50 dark:bg-yellow-900 border-yellow-300 dark:border-yellow-700">
                 <CardContent className="p-4 text-center">
-                    <p className="italic text-xl">"{plan.motivationQuote}"</p>
+                    <p className="italic text-xl break-words">"{plan.motivationQuote}"</p>
                     <span className="text-sm text-muted-foreground">— AI Coach</span>
                 </CardContent>
             </Card>
@@ -441,7 +439,7 @@ export function PlanDisplay({ plan, profile, onRegenerate }: PlanDisplayProps) {
                 <CardContent>
                     <ul className="list-disc list-inside space-y-2">
                         {plan.aiTips.map((tip, i) => (
-                            <li key={i}>{tip}</li>
+                            <li key={i} className="break-words">{tip}</li>
                         ))}
                     </ul>
                 </CardContent>
