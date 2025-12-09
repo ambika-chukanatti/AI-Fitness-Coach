@@ -55,7 +55,7 @@ export default function HomePage() {
   };
   
   return (
-    <div className="relative min-h-screen"> 
+    <div className="relative min-h-screen pt-4"> 
       
       <div className="absolute top-4 right-4 z-50">
         <ThemeToggler />
