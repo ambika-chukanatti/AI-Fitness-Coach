@@ -9,13 +9,11 @@ Checkout Live - [ai-fitness-coach-mauve-three.vercel.app](https://ai-fitness-coa
 
 ## Tech Stack
 
-* **Frontend:** Next.js, React, TypeScript, Tailwind CSS
+* **Frontend:** Next.js, TypeScript, Tailwind CSS, Shadcn
 * **Backend:** Next.js (API Routes), MongoDB
-* **AI Service:** Google Gemini API
+* **AI Service:** gemini-2.5-flash
 * **Image Generation:** Pollinations.ai (for visualizing exercises/meals)
-* **Authentication:** Clerk
 * **Database:** MongoDB
-* **Payments:** Stripe (for potential future premium features)
 * **Deployment:** Vercel
 
 
