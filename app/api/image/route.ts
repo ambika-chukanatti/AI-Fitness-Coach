@@ -1,4 +1,3 @@
-// src/app/api/image/route.ts (Using Pollinations.ai - FREE, NO KEY)
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -10,21 +9,8 @@ export async function POST(req: Request) {
     }
 
     const encodedPrompt = encodeURIComponent(description);
-    
-    const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true`;
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${Date.now()}`;
 
-    const response = await fetch(pollinationsUrl);
-
-    if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to fetch image from Pollinations.' }, { status: response.status });
-    }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    
-    const base64Image = buffer.toString('base64');
-    const imageUrl = `data:image/jpeg;base64,${base64Image}`;
-    
     return NextResponse.json({ imageUrl }, { status: 200 });
 
   } catch (error) {

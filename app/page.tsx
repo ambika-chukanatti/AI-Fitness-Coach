@@ -8,8 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-
-import { ThemeToggler } from '@/components/app/ThemeToggler'; 
+import { ThemeToggler } from '@/components/app/ThemeToggler';
 
 export default function HomePage() {
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
@@ -26,16 +25,13 @@ export default function HomePage() {
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        const errorMessage = errorData.error || 'Failed to fetch plan from AI service.';
-        throw new Error(errorMessage);
+        throw new Error(errorData.error || 'Failed to fetch plan from AI service.');
       }
 
       const generatedPlan: FitnessPlan = await response.json();
@@ -53,10 +49,10 @@ export default function HomePage() {
     setPlan(null);
     setProfile(null);
   };
-  
+
   return (
-    <div className="relative min-h-screen pt-4"> 
-      
+    <div className="relative min-h-screen pt-4">
+
       <div className="absolute top-4 right-4 z-50">
         <ThemeToggler />
       </div>
@@ -79,11 +75,11 @@ export default function HomePage() {
             <Terminal className="h-4 w-4" />
             <AlertTitle>Error Generating Plan</AlertTitle>
             <AlertDescription>
-              {error} <br/> Please check your API key, your environment variables, and retry.
+              {error} <br /> Please check your API key, your environment variables, and retry.
             </AlertDescription>
           </Alert>
           <Button onClick={handleRegenerate} className="mt-4">
-              Try Again
+            Try Again
           </Button>
         </div>
       )}
@@ -99,7 +95,7 @@ export default function HomePage() {
           <PlanForm onGenerate={handleGeneratePlan} />
         </main>
       )}
-      
+
     </div>
   );
 }
