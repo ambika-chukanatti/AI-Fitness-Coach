@@ -20,7 +20,7 @@ interface ImageDisplayProps {
 
 export default function GeneratedImageDisplay({ imageUrl, isLoading, error, onRegenerate }: ImageDisplayProps) {
 
-  const baseClasses = "w-full aspect-video rounded-xl flex flex-col items-center justify-center p-4 mt-4 shadow-md";
+  const baseClasses = "w-full aspect-video rounded-xl flex flex-col items-center justify-center mt-4 shadow-md";
 
   if (imageUrl) {
 
@@ -80,7 +80,7 @@ export default function GeneratedImageDisplay({ imageUrl, isLoading, error, onRe
 
     return (
 
-      <div className="w-full mt-4">
+      <div className="w-full mt-4 p-4">
 
         <div className={`${baseClasses} bg-red-50 text-red-500 border border-red-200 shadow-none`}>
 

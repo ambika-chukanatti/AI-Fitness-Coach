@@ -14,7 +14,6 @@ import { MyPlanPDF } from './PdfDocument';
 
 import GeneratedImageDisplay from './GeneratedImageDisplay'; 
 
-const IMAGE_REQUEST_COOLDOWN = 5000; 
 const IMAGE_GENERATION_TIMEOUT = 30000; 
 
 type ItemState = {
@@ -32,7 +31,6 @@ const getCacheKey = (day: string, itemName: string) =>
     `cache_img_${day.toLowerCase().replace(/\s/g, '_')}_${itemName.toLowerCase().replace(/\s/g, '_')}`;
 
 const fetchImage = async (description: string): Promise<string> => {
-    
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), IMAGE_GENERATION_TIMEOUT);
 
@@ -41,27 +39,28 @@ const fetchImage = async (description: string): Promise<string> => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ description }),
-            signal: controller.signal, 
+            signal: controller.signal,
         });
-        
-        clearTimeout(timeoutId); 
 
-        const data = await response.json();
-        
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            if (response.status === 429) {
-                    throw new Error('Rate limit exceeded. Please wait a moment.');
-            }
+            const data = await response.json();
             throw new Error(data.error || 'Failed to generate image.');
         }
-        
-        return data.imageUrl;
+
+        const blob = await response.blob();
+        return await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
 
     } catch (error: any) {
         clearTimeout(timeoutId);
-
         if (error.name === 'AbortError') {
-            throw new Error(`Image generation timed out after ${IMAGE_GENERATION_TIMEOUT / 1000} seconds. Please retry.`);
+            throw new Error(`Image generation timed out after ${IMAGE_GENERATION_TIMEOUT / 1000} seconds.`);
         }
         throw error;
     }
@@ -79,7 +78,6 @@ const WorkoutCard = React.memo(({ dayPlan }: { dayPlan: DailyWorkout }) => {
     }));
 
     const [exercisesState, setExercisesState] = useState(initialExerciseState);
-    const lastRequestTimeRef = useRef(0);
 
     const handleGenerateImage = useCallback(async (index: number, prompt: string) => {
         setExercisesState(prev => 
@@ -94,8 +92,6 @@ const WorkoutCard = React.memo(({ dayPlan }: { dayPlan: DailyWorkout }) => {
             setExercisesState(prev => 
                 prev.map((exState, i) => i === index ? { ...exState, imageUrl, isLoading: false } : exState)
             );
-            lastRequestTimeRef.current = Date.now();
-
         } catch (err: any) {
             setExercisesState(prev => 
                 prev.map((exState, i) => i === index ? { ...exState, error: err.message, isLoading: false } : exState)
@@ -103,27 +99,15 @@ const WorkoutCard = React.memo(({ dayPlan }: { dayPlan: DailyWorkout }) => {
         }
     }, [dayPlan.day, dayPlan.focus]);
 
-
     const handleRegenerateClick = useCallback((index: number, exerciseName: string, exercisePrompt: string) => {
-        const timeElapsed = Date.now() - lastRequestTimeRef.current;
-        if (timeElapsed < IMAGE_REQUEST_COOLDOWN) {
-            const remainingTime = Math.ceil((IMAGE_REQUEST_COOLDOWN - timeElapsed) / 1000);
-            setExercisesState(prev => 
-                prev.map((exState, i) => i === index ? { ...exState, error: `Rate limit: Wait ${remainingTime}s.`, isLoading: false } : exState)
-            );
-            return;
-        }
-
         localStorage.removeItem(getCacheKey(dayPlan.day, exerciseName));
         setExercisesState(prev => {
             const newState = [...prev];
             newState[index] = { ...newState[index], imageUrl: undefined, error: null };
             return newState;
         });
-        
         handleGenerateImage(index, exercisePrompt);
     }, [dayPlan.day, handleGenerateImage]);
-
 
     const handleTriggerClick = (index: number, exerciseName: string, exercisePrompt: string) => {
         const exState = exercisesState[index];
@@ -137,18 +121,9 @@ const WorkoutCard = React.memo(({ dayPlan }: { dayPlan: DailyWorkout }) => {
         });
 
         if (!isCurrentlyOpen && !isCached) {
-            const timeElapsed = Date.now() - lastRequestTimeRef.current;
-            if (timeElapsed < IMAGE_REQUEST_COOLDOWN) {
-                const remainingTime = Math.ceil((IMAGE_REQUEST_COOLDOWN - timeElapsed) / 1000);
-                setExercisesState(prev => 
-                    prev.map((state, i) => i === index ? { ...state, error: `Rate limit: Wait ${remainingTime}s.`, isLoading: false } : state)
-                );
-                return; 
-            }
             handleGenerateImage(index, exercisePrompt);
         }
     };
-
 
     return (
         <Card className="mb-4">
@@ -207,7 +182,6 @@ const DietCard = React.memo(({ dayPlan }: { dayPlan: DailyDiet }) => {
     }));
     
     const [mealsState, setMealsState] = useState(initialMealState);
-    const lastRequestTimeRef = useRef(0);
 
     const handleGenerateImage = useCallback(async (index: number, prompt: string) => {
         setMealsState(prev => prev.map((mealState, i) => i === index ? { ...mealState, isLoading: true, error: null } : mealState));
@@ -218,21 +192,12 @@ const DietCard = React.memo(({ dayPlan }: { dayPlan: DailyDiet }) => {
             localStorage.setItem(cacheKey, imageUrl);
 
             setMealsState(prev => prev.map((mealState, i) => i === index ? { ...mealState, imageUrl, isLoading: false } : mealState));
-            lastRequestTimeRef.current = Date.now();
-
         } catch (err: any) {
             setMealsState(prev => prev.map((mealState, i) => i === index ? { ...mealState, error: err.message, isLoading: false } : mealState));
         }
-    }, [dayPlan.day]); 
+    }, [dayPlan.day]);
 
     const handleRegenerateClick = useCallback((index: number, mealName: string, mealPrompt: string) => {
-        const timeElapsed = Date.now() - lastRequestTimeRef.current;
-        if (timeElapsed < IMAGE_REQUEST_COOLDOWN) {
-            const remainingTime = Math.ceil((IMAGE_REQUEST_COOLDOWN - timeElapsed) / 1000);
-            setMealsState(prev => prev.map((mealState, i) => i === index ? { ...mealState, error: `Rate limit: Wait ${remainingTime}s.`, isLoading: false } : mealState));
-            return;
-        }
-
         localStorage.removeItem(getCacheKey(dayPlan.day, mealName));
         setMealsState(prev => {
             const newState = [...prev];
@@ -254,12 +219,6 @@ const DietCard = React.memo(({ dayPlan }: { dayPlan: DailyDiet }) => {
         });
 
         if (!isCurrentlyOpen && !isCached) {
-            const timeElapsed = Date.now() - lastRequestTimeRef.current;
-            if (timeElapsed < IMAGE_REQUEST_COOLDOWN) {
-                const remainingTime = Math.ceil((IMAGE_REQUEST_COOLDOWN - timeElapsed) / 1000);
-                setMealsState(prev => prev.map((state, i) => i === index ? { ...state, error: `Rate limit: Wait ${remainingTime}s.`, isLoading: false } : state));
-                return;
-            }
             handleGenerateImage(index, mealPrompt);
         }
     };
