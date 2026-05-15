@@ -51,7 +51,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative min-h-screen pt-4">
+    <div className="relative min-h-screen pt-4" style={{ zoom: 0.8 }}>
 
       <div className="absolute top-4 right-4 z-50">
         <ThemeToggler />
