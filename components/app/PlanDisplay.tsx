@@ -431,8 +431,6 @@ export function PlanDisplay({ plan, profile, onRegenerate }: PlanDisplayProps) {
                 </TabsContent>
             </Tabs>
             
-            <Separator className="my-8" />
-            
             <Card>
                 <CardHeader>
                     <CardTitle className="text-xl sm:text-2xl flex items-center"><Zap className="w-5 h-5 mr-2 text-green-500" /> AI Lifestyle Tips</CardTitle>

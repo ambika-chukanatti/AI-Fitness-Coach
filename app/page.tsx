@@ -85,9 +85,9 @@ export default function HomePage() {
       )}
 
       {plan && profile && (
-        <ScrollArea className="h-screen w-full">
+        <div className="w-full">
           <PlanDisplay plan={plan} profile={profile} onRegenerate={handleRegenerate} />
-        </ScrollArea>
+        </div>
       )}
 
       {!loading && !error && !plan && (
