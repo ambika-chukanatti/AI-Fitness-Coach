@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
       const response = await fetch(imageUrl, { signal: controller.signal });
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
           status: 200,
           headers: {
             'Content-Type': 'image/jpeg',
-            'Cache-Control': 'public, max-age=86400',
+            'Cache-Control': 'public, max-age=300000',
           },
         });
       }
