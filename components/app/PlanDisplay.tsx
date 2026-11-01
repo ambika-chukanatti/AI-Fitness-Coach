@@ -14,7 +14,7 @@ import { MyPlanPDF } from './PdfDocument';
 
 import GeneratedImageDisplay from './GeneratedImageDisplay'; 
 
-const IMAGE_GENERATION_TIMEOUT = 30000; 
+const IMAGE_GENERATION_TIMEOUT = 60000; 
 
 type ItemState = {
     imageUrl?: string;
